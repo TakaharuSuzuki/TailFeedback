@@ -1,0 +1,98 @@
+// -------------------------------
+// Fur Section
+// -------------------------------
+vertex_program VFur hlsl
+{
+   source FurShader.hlsl
+   entry_point VS_TransformAndTexture
+   target vs_2_0
+   uses_vertex_texture_fetch true
+
+   default_params
+   {
+      param_named_auto worldViewProj worldviewproj_matrix
+      param_named_auto matWorld world_matrix
+      param_named FurLength float 0.05
+      param_named UVScale float 1.0
+      param_named_auto Layer pass_iteration_number
+      param_named vGravity float3 0.0 0.0 0.0
+   }
+}
+
+fragment_program PFur hlsl
+{
+   source FurShader.hlsl
+   entry_point PS_Textured
+   target ps_2_0
+   
+   default_params
+   {
+      param_named vecLightDir float3 0.8 0.8 1,0 
+   }
+}
+
+material NormalTail
+{
+   receive_shadows on
+   technique 
+   {
+      pass NormalTail
+      {
+         //iteration 50
+		 
+         ambient 0.800000011920929 0.800000011920929 0.800000011920929 1.0
+         diffuse 0.6400000190734865 0.6400000190734865 0.6400000190734865 1.0
+         specular 0.5 0.5 0.5 1.0 12.5
+         emissive 0.0 0.0 0.0 1.0
+
+         alpha_to_coverage off
+         colour_write on
+         cull_hardware none
+         cull_software none
+         depth_check on
+         depth_func less_equal
+         depth_write on
+         illumination_stage 
+         light_clip_planes off
+         light_scissor off
+         lighting on
+         normalise_normals on
+         polygon_mode solid
+         scene_blend_op add
+		 scene_blend src_alpha one_minus_src_alpha	
+         shading gouraud
+         transparent_sorting on
+		 
+
+         //vertex_program_ref VFur
+         //{
+         //   param_named_auto worldViewProj worldviewproj_matrix
+         //   param_named_auto matWorld world_matrix
+         //   param_named FurLength float 2.5
+         //   param_named UVScale float 1.0
+         //   param_named_auto Layer pass_iteration_number
+         //}
+         //fragment_program_ref PFur
+         //{
+         //   param_named vecLightDir float3 0.8 0.8 1,0
+		 //   param_named_auto Layer pass_iteration_number
+         //}
+
+		 texture_unit
+         {
+            texture fur_texture.png
+            tex_address_mode wrap
+            scale 1.0 1.0
+            colour_op modulate
+            alpha_op_ex source1 src_manual src_current 1.0
+         }
+		 //texture_unit
+         //{
+         //   texture FurNoiseSharp.png
+         //   tex_address_mode wrap
+         //   scale 1.0 1.0
+         //   colour_op modulate
+         //}
+      }
+   }
+}
